@@ -1,0 +1,22 @@
+services:
+  storage:
+    image: valkey/valkey:8.1
+    container_name: storage_bundle-storage
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - storage_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      valkey-server
+      --requirepass ${VALKEY_PASSWORD:-secret}
+      --appendonly yes
+      --save 60 1
+
+volumes:
+  storage_data:

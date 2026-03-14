@@ -1,0 +1,42 @@
+{
+  "name": "philipphermes/storage-bundle",
+  "type": "symfony-bundle",
+  "description": "A Symfony bundle providing a simple and elegant Redis/Valkey storage client with automatic JSON serialization, transaction support, and essential caching operations.",
+  "keywords": [
+    "redis",
+    "storage",
+    "valkey"
+  ],
+  "readme": "/README.md",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Philipp Hermes"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "PhilippHermes\\StorageBundle\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "PhilippHermes\\StorageBundle\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": ">=8.3",
+    "predis/predis": "^3.4",
+    "symfony/config": ">=7.4",
+    "symfony/console": ">=7.4",
+    "symfony/dependency-injection": ">=7.4",
+    "symfony/framework-bundle": "^8.0"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.1",
+    "phpunit/phpunit": "^12.1"
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
