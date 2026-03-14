@@ -60,18 +60,18 @@ jobs:
         run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --ignore-platform-reqs
 
       - name: Start Docker Compose
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: Wait for storage to be ready
         run: |
-          timeout 30 sh -c 'until docker-compose exec -T storage redis-cli -a secret ping; do sleep 1; done'
+          timeout 30 sh -c 'until docker compose exec -T storage redis-cli -a secret ping; do sleep 1; done'
 
       - name: PHPUnit
         run: vendor/bin/phpunit --coverage-html coverage-report
 
       - name: Stop Docker Compose
         if: always()
-        run: docker-compose down
+        run: docker compose down
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
