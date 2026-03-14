@@ -59,7 +59,7 @@ interface StorageClientInterface
      * @param string $pattern
      * @param int $batchSize
      *
-     * @return \Generator<array>
+     * @return \Generator<array<array-key, string>>
      */
     public function scan(string $pattern = '*', int $batchSize = 1000): \Generator;
 

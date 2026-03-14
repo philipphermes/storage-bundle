@@ -52,6 +52,7 @@ class StorageCleanCommand extends Command
         $io->info(sprintf('Deleting keys matching pattern: %s', $pattern));
 
         $deletedCount = 0;
+        /** @var list<string> $keys */
         foreach ($this->storageClient->scan($pattern, $batchSize) as $keys) {
             $deletedCount += count($keys);
             $this->storageClient->deleteMultiple($keys);

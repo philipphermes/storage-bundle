@@ -86,7 +86,7 @@ class StorageGetCommand extends Command
                 if (is_array($value)) {
                     $this->displayArray($io, $value);
                 } else {
-                    $io->text($value);
+                    $io->text((string)($value ?? ''));
                 }
                 break;
         }
