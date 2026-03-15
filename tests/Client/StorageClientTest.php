@@ -6,9 +6,14 @@ namespace PhilippHermes\StorageBundle\Tests\Client;
 
 use PhilippHermes\StorageBundle\Client\StorageClient;
 use PhilippHermes\StorageBundle\Client\StorageClientInterface;
+use PhilippHermes\StorageBundle\Tests\_data\TestObject;
 use PHPUnit\Framework\TestCase;
 use Predis\ClientInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
+use Symfony\Component\Serializer\Normalizer\JsonSerializableNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class StorageClientTest extends TestCase
 {
@@ -31,7 +36,10 @@ class StorageClientTest extends TestCase
             'storage.persistent' => false
         ]);
 
-        $this->storageClient = new StorageClient($parameterBag);
+        $this->storageClient = new StorageClient($parameterBag, new Serializer(
+            [new JsonSerializableNormalizer(), new ObjectNormalizer()],
+            [new JsonEncode()],
+        ));
     }
 
     /**
@@ -69,6 +77,16 @@ class StorageClientTest extends TestCase
     /**
      * @return void
      */
+    public function testSetAndGetObject(): void
+    {
+        $this->storageClient->set('kv:user:1', new TestObject('test'));
+
+        self::assertSame(['name' => 'test'], $this->storageClient->get('kv:user:1'));
+    }
+
+    /**
+     * @return void
+     */
     public function testSetAndGetMultiple(): void
     {
         $this->storageClient->setMultiple([
@@ -93,6 +111,25 @@ class StorageClientTest extends TestCase
         $this->storageClient->setMultiple([
             'kv:user:1' => ['name' => 'test 1'],
             'kv:user:2' => ['name' => 'test 2'],
+        ]);
+
+        $values = $this->storageClient->getMultiple([
+            'kv:user:1',
+            'kv:user:2'
+        ]);
+
+        self::assertSame(['name' => 'test 1'], $values['kv:user:1']);
+        self::assertSame(['name' => 'test 2'], $values['kv:user:2']);
+    }
+
+    /**
+     * @return void
+     */
+    public function testSetAndGetMultipleObject(): void
+    {
+        $this->storageClient->setMultiple([
+            'kv:user:1' => new TestObject('test 1'),
+            'kv:user:2' => new TestObject('test 2'),
         ]);
 
         $values = $this->storageClient->getMultiple([

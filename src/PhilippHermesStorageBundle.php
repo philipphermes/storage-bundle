@@ -7,9 +7,7 @@ namespace PhilippHermes\StorageBundle;
 use PhilippHermes\StorageBundle\Client\StorageClient;
 use PhilippHermes\StorageBundle\Client\StorageClientInterface;
 use PhilippHermes\StorageBundle\Command\StorageCleanCommand;
-use PhilippHermes\StorageBundle\Command\StorageGetCommand;
-use PhilippHermes\StorageBundle\Command\StorageInfoCommand;
-use PhilippHermes\StorageBundle\Command\StorageKeysCommand;
+use PhilippHermes\StorageBundle\Command\StorageReadCommand;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -77,19 +75,7 @@ class PhilippHermesStorageBundle extends AbstractBundle
             ->addTag('console.command');
 
         $builder
-            ->register(StorageInfoCommand::class)
-            ->setAutowired(true)
-            ->setAutoconfigured(true)
-            ->addTag('console.command');
-
-        $builder
-            ->register(StorageKeysCommand::class)
-            ->setAutowired(true)
-            ->setAutoconfigured(true)
-            ->addTag('console.command');
-
-        $builder
-            ->register(StorageGetCommand::class)
+            ->register(StorageReadCommand::class)
             ->setAutowired(true)
             ->setAutoconfigured(true)
             ->addTag('console.command');

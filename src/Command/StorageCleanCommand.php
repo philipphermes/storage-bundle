@@ -25,7 +25,7 @@ class StorageCleanCommand extends Command
     {
         $this
             ->addOption('pattern', 'p', InputOption::VALUE_OPTIONAL, 'Key pattern to match (default: *)', '*')
-            ->addOption('batch-size', 'b', InputOption::VALUE_OPTIONAL, 'Number of keys to scan per iteration', 1000)
+            ->addOption('batch', 'b', InputOption::VALUE_OPTIONAL, 'Number of keys to scan per iteration', 1000)
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Skip confirmation prompt');
     }
 
@@ -34,7 +34,7 @@ class StorageCleanCommand extends Command
         $io = new SymfonyStyle($input, $output);
         
         $pattern = $input->getOption('pattern');
-        $batchSize = (int)$input->getOption('batch-size');
+        $batch = (int)$input->getOption('batch');
         $force = $input->getOption('force');
 
         if (!$force) {
@@ -53,7 +53,7 @@ class StorageCleanCommand extends Command
 
         $deletedCount = 0;
         /** @var list<string> $keys */
-        foreach ($this->storageClient->scan($pattern, $batchSize) as $keys) {
+        foreach ($this->storageClient->scan($pattern, $batch) as $keys) {
             $deletedCount += count($keys);
             $this->storageClient->deleteMultiple($keys);
         }

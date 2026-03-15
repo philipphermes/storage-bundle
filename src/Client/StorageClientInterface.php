@@ -10,16 +10,16 @@ interface StorageClientInterface
 {
     /**
      * @param string $key
-     * @param string|int|array<array-key, mixed> $value
+     * @param string|int|array<array-key, mixed>|object $value
      * @param string|null $expireResolution
      * @param int|null $expireTtl
      *
      * @return void
      */
-    public function set(string $key, string|int|array $value, ?string $expireResolution = null, ?int $expireTtl = null): void;
+    public function set(string $key, string|int|array|object $value, ?string $expireResolution = null, ?int $expireTtl = null): void;
 
     /**
-     * @param array<string, string|int|array<array-key, mixed>> $keysValues
+     * @param array<string, string|int|array<array-key, mixed>|object> $keysValues
      * @param string|null $expireResolution
      * @param int|null $expireTtl
      *

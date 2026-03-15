@@ -8,6 +8,8 @@ use Predis\Client;
 use Predis\ClientInterface;
 use Predis\Transaction\MultiExec;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class StorageClient implements StorageClientInterface
 {
@@ -25,9 +27,11 @@ class StorageClient implements StorageClientInterface
 
     /**
      * @param ParameterBagInterface $parameterBag
+     * @param SerializerInterface $serializer
      */
     public function __construct(
         protected ParameterBagInterface $parameterBag,
+        protected SerializerInterface $serializer,
     )
     {
     }
@@ -35,12 +39,12 @@ class StorageClient implements StorageClientInterface
     /**
      * @inheritDoc
      *
-     * @throws \JsonException
+     * @throws ExceptionInterface
      */
-    public function set(string $key, string|int|array $value, ?string $expireResolution = null, ?int $expireTtl = null): void
+    public function set(string $key, string|int|array|object $value, ?string $expireResolution = null, ?int $expireTtl = null): void
     {
-        if (is_array($value)) {
-            $value = json_encode($value, JSON_THROW_ON_ERROR);
+        if (is_array($value) || is_object($value)) {
+            $value = $this->serializer->serialize($value, 'json');
         }
 
         $this->getClient()->set($key, $value, $expireResolution, $expireTtl);
@@ -49,13 +53,13 @@ class StorageClient implements StorageClientInterface
     /**
      * @inheritDoc
      *
-     * @throws \JsonException
+     * @throws ExceptionInterface
      */
     public function setMultiple(array $keysValues, ?string $expireResolution = null, ?int $expireTtl = null): void
     {
         foreach ($keysValues as $key => $value) {
-            if (is_array($value)) {
-                $keysValues[$key] = json_encode($value, JSON_THROW_ON_ERROR);
+            if (is_array($value) || is_object($value)) {
+                $keysValues[$key] = $this->serializer->serialize($value, 'json');
             }
         }
 
