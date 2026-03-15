@@ -1,7 +1,7 @@
 services:
   storage:
     image: valkey/valkey:8.1
-    container_name: storage_bundle-storage
+    container_name: storage-bundle_storage
     restart: unless-stopped
     ports:
       - "6379:6379"

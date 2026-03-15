@@ -6,6 +6,7 @@ namespace PhilippHermes\StorageBundle\Tests\Client;
 
 use PhilippHermes\StorageBundle\Client\StorageClient;
 use PhilippHermes\StorageBundle\Client\StorageClientInterface;
+use PhilippHermes\StorageBundle\Client\StorageConfig;
 use PhilippHermes\StorageBundle\Tests\_data\TestObject;
 use PHPUnit\Framework\TestCase;
 use Predis\ClientInterface;
@@ -27,18 +28,23 @@ class StorageClientTest extends TestCase
         parent::setUp();
 
         $parameterBag = new ParameterBag([
-            'storage.schema' => 'tcp',
-            'storage.host' => 'localhost',
-            'storage.port' => 6379,
-            'storage.path' => null,
-            'storage.username' => null,
-            'storage.password' => 'secret',
-            'storage.persistent' => false
+            'storage.parameters' => [
+                'schema' => 'tcp',
+                'host' => 'localhost',
+                'port' => 6379,
+                'path' => null,
+                'username' => null,
+                'password' => 'secret',
+                'persistent' => false,
+                'database' => 0,
+            ],
         ]);
 
-        $this->storageClient = new StorageClient($parameterBag, new Serializer(
-            [new JsonSerializableNormalizer(), new ObjectNormalizer()],
-            [new JsonEncode()],
+        $this->storageClient = new StorageClient(
+            new StorageConfig($parameterBag),
+            new Serializer(
+                [new JsonSerializableNormalizer(), new ObjectNormalizer()],
+                [new JsonEncode()],
         ));
     }
 
@@ -198,7 +204,7 @@ class StorageClientTest extends TestCase
      */
     public function testTTL(): void
     {
-        $this->storageClient->set('kv:foo', 'bar', StorageClient::EXPIRE_RESOLUTION_EX, 5);
+        $this->storageClient->set('kv:foo', 'bar', StorageClientInterface::EXPIRE_RESOLUTION_SECONDS, 5);
 
         $ttl = $this->storageClient->ttl('kv:foo');
 
@@ -215,7 +221,7 @@ class StorageClientTest extends TestCase
      */
     public function testTTLAndRemoveExpiration(): void
     {
-        $this->storageClient->set('kv:foo', 'bar', StorageClient::EXPIRE_RESOLUTION_EX, 5);
+        $this->storageClient->set('kv:foo', 'bar', StorageClientInterface::EXPIRE_RESOLUTION_SECONDS, 5);
 
         $ttlBefore = $this->storageClient->ttl('kv:foo');
         $this->storageClient->persist('kv:foo');

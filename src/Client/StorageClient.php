@@ -7,30 +7,19 @@ namespace PhilippHermes\StorageBundle\Client;
 use Predis\Client;
 use Predis\ClientInterface;
 use Predis\Transaction\MultiExec;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class StorageClient implements StorageClientInterface
 {
-    /**
-     * expiration in seconds
-     */
-    public const string EXPIRE_RESOLUTION_EX = 'EX';
-
-    /**
-     * expiration in milliseconds
-     */
-    public const string EXPIRE_RESOLUTION_PX = 'PX';
-
     protected static ?ClientInterface $client = null;
 
     /**
-     * @param ParameterBagInterface $parameterBag
+     * @param StorageConfig $storageConfig
      * @param SerializerInterface $serializer
      */
     public function __construct(
-        protected ParameterBagInterface $parameterBag,
+        protected StorageConfig $storageConfig,
         protected SerializerInterface $serializer,
     )
     {
@@ -205,8 +194,8 @@ class StorageClient implements StorageClientInterface
     {
         if (!self::$client instanceof ClientInterface) {
             self::$client = new Client(
-                $this->getParameters(),
-                [], //TODO for clusters and replication
+                $this->storageConfig->getParameters(), //TODO maybe add validation
+                $this->storageConfig->getOptions(),
             );
         }
 
@@ -214,44 +203,18 @@ class StorageClient implements StorageClientInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @inheritDoc
      */
-    protected function getParameters(): array
+    public function connect(): void
     {
-        $parameters = [];
+        $this->getClient()->connect();
+    }
 
-        if ($this->parameterBag->has('storage.schema')) {
-            $parameters['schema'] = $this->parameterBag->get('storage.schema');
-        }
-
-        if ($this->parameterBag->has('storage.host')) {
-            $parameters['host'] = $this->parameterBag->get('storage.host');
-        }
-
-        if ($this->parameterBag->has('storage.port')) {
-            $parameters['port'] = $this->parameterBag->get('storage.port');
-        }
-
-        if ($this->parameterBag->has('storage.path')) {
-            $parameters['path'] = $this->parameterBag->get('storage.path');
-        }
-
-        if ($this->parameterBag->has('storage.username')) {
-            $parameters['username'] = $this->parameterBag->get('storage.username');
-        }
-
-        if ($this->parameterBag->has('storage.password')) {
-            $parameters['password'] = $this->parameterBag->get('storage.password');
-        }
-
-        if ($this->parameterBag->has('storage.persistent')) {
-            $parameters['persistent'] = (bool)$this->parameterBag->get('storage.persistent');
-        }
-
-        # TODO ssl
-        # 'ssl'    => ['cafile' => 'private.pem', 'verify_peer' => true],
-        # https://www.php.net/manual/de/context.ssl.php
-
-        return $parameters;
+    /**
+     * @inheritDoc
+     */
+    public function disconnect(): void
+    {
+        $this->getClient()->disconnect();
     }
 }

@@ -131,7 +131,7 @@ use PhilippHermes\StorageBundle\Client\StorageClient;
 $this->storage->set(
     'session:token',
     'abc123',
-    StorageClient::EXPIRE_RESOLUTION_EX,
+    StorageClientInterface::EXPIRE_RESOLUTION_SECONDS,
     60
 );
 
@@ -139,7 +139,7 @@ $this->storage->set(
 $this->storage->set(
     'rate:limit',
     '100',
-    StorageClient::EXPIRE_RESOLUTION_PX,
+    StorageClientInterface::EXPIRE_RESOLUTION_MILLISECONDS,
     5000
 );
 ```

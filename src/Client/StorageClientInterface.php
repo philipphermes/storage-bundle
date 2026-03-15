@@ -8,6 +8,10 @@ use Predis\ClientInterface;
 
 interface StorageClientInterface
 {
+    public const string EXPIRE_RESOLUTION_SECONDS = 'EX';
+
+    public const string EXPIRE_RESOLUTION_MILLISECONDS = 'PX';
+
     /**
      * @param string $key
      * @param string|int|array<array-key, mixed>|object $value
@@ -112,4 +116,14 @@ interface StorageClientInterface
      * @return ClientInterface
      */
     public function getClient(): ClientInterface;
+
+    /**
+     * @return void
+     */
+    public function connect(): void;
+
+    /**
+     * @return void
+     */
+    public function disconnect(): void;
 }
